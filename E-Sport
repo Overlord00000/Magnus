@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Homepage with Middle Box</title>
+  <style>
+    /* Basic styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .box {
+      width: calc(33.33% - 20px);
+      height: 400px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      transition: transform 0.3s ease-in-out;
+      transform-origin: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .box:hover {
+      transform: scale(1.05);
+      z-index: 2;
+    }
+
+    .zoom-in {
+      transform: scale(1.05) !important;
+    }
+
+    .box.middle {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .video-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .video {
+      width: 400px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="boxContainer">
+    <!-- Boxes will be dynamically created here -->
+  </div>
+
+  <!-- Video section -->
+  <div class="video-container">
+    <video controls class="video">
+      <source src="your-video-file.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <script>
+    let currentIndex = 0;
+    let isMouseNear = false;
+
+    function createBoxes() {
+      const container = document.getElementById('boxContainer');
+      for (let i = 1; i <= 21; i++) {
+        const box = document.createElement('div');
+        box.className = 'box';
+        box.textContent = i;
+        container.appendChild(box);
+        box.addEventListener('mouseenter', function(event) {
+          handleMouseEnter(event, box);
+        });
+        box.addEventListener('mouseleave', function(event) {
+          handleMouseLeave(event, box);
+        });
+      }
+
+      const middleBox = document.createElement('div');
+      middleBox.className = 'box middle';
+      middleBox.textContent = 22;
+      container.appendChild(middleBox);
+      middleBox.addEventListener('mouseenter', function(event) {
+        handleMouseEnter(event, middleBox);
+      });
+      middleBox.addEventListener('mouseleave', function(event) {
+        handleMouseLeave(event, middleBox);
+      });
+
+      setInterval(autoZoom, 2000);
+    }
+
+    function autoZoom() {
+      const boxes = document.querySelectorAll('.box');
+      if (!isMouseNear) {
+        boxes.forEach(box => {
+          box.classList.remove('zoom-in');
+        });
+        boxes[currentIndex].classList.add('zoom-in');
+        currentIndex = (currentIndex + 1) % boxes.length;
+      }
+    }
+
+    function handleMouseEnter(event, target) {
+      const boxes = document.querySelectorAll('.box');
+      isMouseNear = true;
+
+      boxes.forEach(box => {
+        if (box !== target) {
+          box.classList.remove('zoom-in');
+        }
+      });
+    }
+
+    function handleMouseLeave(event, target) {
+      const boxes = document.querySelectorAll('.box');
+      isMouseNear = false;
+      const hoveredBoxIndex = [...boxes].findIndex(box => box === target);
+
+      if (hoveredBoxIndex !== currentIndex) {
+        boxes.forEach(box => {
+          box.classList.remove('zoom-in');
+        });
+        currentIndex = hoveredBoxIndex;
+      }
+    }
+
+    window.onload = createBoxes;
+  </script>
+</body>
+</html>
